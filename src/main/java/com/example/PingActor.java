@@ -10,6 +10,7 @@ import akka.event.LoggingAdapter;
 public class PingActor extends UntypedAbstractActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
+    //Criando PROPS, = configurações imutaveis do Ator
     public static Props props() {
         return Props.create(PingActor.class);
     }
@@ -17,10 +18,10 @@ public class PingActor extends UntypedAbstractActor {
     public static class Initialize {
     }
 
-    public static class PingMessage {
+    public static class MensagemDoPing {
         private final String text;
 
-        public PingMessage(String text) {
+        public MensagemDoPing(String text) {
             this.text = text;
         }
 
@@ -32,21 +33,25 @@ public class PingActor extends UntypedAbstractActor {
     private int counter = 0;
     private ActorRef pongActor = getContext().actorOf(PongActor.props(), "Pong");
 
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof Initialize) {
+    public void onReceive(Object mensagemAPrintar) throws Exception {
+
+        //Se mensagem for do tipo Initialize, começa o jogo
+        if (mensagemAPrintar instanceof Initialize) {
             log.info("Iniciando o Ping-Pong");
-            pongActor.tell(new PingMessage("Ping"), getSelf());
-        } else if (message instanceof PongActor.PongMessage) {
-            PongActor.PongMessage pong = (PongActor.PongMessage) message;
+            pongActor.tell(new MensagemDoPing("Ping"), getSelf());
+
+            //Se for do tipo Pong e
+        } else if (mensagemAPrintar instanceof PongActor.PongMessage) {
+            PongActor.PongMessage pong = (PongActor.PongMessage) mensagemAPrintar;
             log.info("Mensagem do Ping: {}", pong.getTextoMSG());
             counter += 1;
             if (counter == 3) {
                 getContext().system().terminate();
             } else {
-                getSender().tell(new PingMessage("Ping"), getSelf());
+                getSender().tell(new MensagemDoPing("Ping"), getSelf());
             }
         } else {
-            unhandled(message);
+            unhandled(mensagemAPrintar);
         }
     }
 }

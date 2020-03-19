@@ -24,9 +24,10 @@ public class PongActor extends UntypedAbstractActor {
         }
     }
 
+    //onReceive já é um método do UntypedAbstractActor, que faz literalmente o que o nome do método fala.
     public void onReceive(Object message) throws Exception {
-        if (message instanceof PingActor.PingMessage) {
-            PingActor.PingMessage ping = (PingActor.PingMessage) message;
+        if (message instanceof PingActor.MensagemDoPing) {
+            PingActor.MensagemDoPing ping = (PingActor.MensagemDoPing) message;
             log.info("Mensagem do Pong: {}", ping.getText());
             getSender().tell(new PongMessage("Pong"), getSelf());
         } else {
