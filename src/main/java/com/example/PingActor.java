@@ -31,8 +31,11 @@ public class PingActor extends UntypedAbstractActor {
     }
 
     private int counter = 0;
+
+    //Criando Atror Pong com propriedades do Pong Actor
     private ActorRef pongActor = getContext().actorOf(PongActor.props(), "Pong");
 
+    //Ao receber
     public void onReceive(Object mensagemAPrintar) throws Exception {
 
         //Se mensagem for do tipo Initialize, começa o jogo
@@ -45,11 +48,16 @@ public class PingActor extends UntypedAbstractActor {
             PongActor.PongMessage pong = (PongActor.PongMessage) mensagemAPrintar;
             log.info("Mensagem do Ping: {}", pong.getTextoMSG());
             counter += 1;
+
+            //Se ação acontecer 3 vezes, termina
             if (counter == 3) {
                 getContext().system().terminate();
+
+                //Se não, continua comunicando com 'PongActor', mandando a msg: 'Ping'
             } else {
                 getSender().tell(new MensagemDoPing("Ping"), getSelf());
             }
+            //Erro
         } else {
             unhandled(mensagemAPrintar);
         }
